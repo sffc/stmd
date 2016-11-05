@@ -6,8 +6,7 @@ import prettytensor
 
 import utils
 
-
-# Define some global constants.
+# Global constants
 BATCH_SIZE = 12
 NUM_CLASSES = 2
 NUM_EPOCHS = 500
@@ -16,18 +15,12 @@ NUM_DATA_PTS = 144
 
 
 # Load the data and split it into training and test.
-lung_data = utils.reservoir_sample(utils.read_stmd("lung"), NUM_DATA_PTS)
-lymph_data = utils.reservoir_sample(utils.read_stmd("lymph"), NUM_DATA_PTS)
-height, width = lung_data[0].shape
-dataX, dataY = utils.split_and_batch_data(
-	lung_data + lymph_data,
-	[0]*NUM_DATA_PTS + [1]*NUM_DATA_PTS,
-	BATCH_SIZE, NUM_CLASSES)
+dataX, dataY = utils.get_data_batches(NUM_DATA_PTS, BATCH_SIZE)
 
 
 # Set up the neural network using PrettyTensor.
 # Use a simple CNN with one hidden layer of 50 neurons.
-input_t = tf.placeholder(tf.float32, (BATCH_SIZE, height, width, 1), name="input_t")
+input_t = tf.placeholder(tf.float32, (BATCH_SIZE, dataX[0].shape[1], dataX[0].shape[2], 1), name="input_t")
 labels_t = tf.placeholder(tf.float32, (BATCH_SIZE, NUM_CLASSES), name="labels_t")
 input_p = prettytensor.wrap(input_t)
 hidden_p = (input_p

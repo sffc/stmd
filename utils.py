@@ -21,6 +21,7 @@ def reservoir_sample(generator, k):
 
 
 def read_stmd(organ):
+	"""Returns a generator over images for the specified organ."""
 	basedir = os.path.join(os.path.dirname(__file__), "data", organ)
 	for filename in os.listdir(basedir):
 		img_path = os.path.join(basedir, filename)
@@ -68,3 +69,12 @@ def split_and_batch_data(all_X, all_Y, batch_size, num_classes):
 		dataY_batched.append(batchY)
 
 	return dataX_batched, dataY_batched
+
+
+def get_data_batches(num_per_organ, batch_size):
+	lung_data = reservoir_sample(read_stmd("lung"), num_per_organ)
+	lymph_data = reservoir_sample(read_stmd("lymph"), num_per_organ)
+	return split_and_batch_data(
+		lung_data + lymph_data,
+		[0]*num_per_organ + [1]*num_per_organ,
+		batch_size, 2)
